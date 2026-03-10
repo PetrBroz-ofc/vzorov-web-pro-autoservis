@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-Pneu Servis Novák | Děčín</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#080a0f;--ink2:#0e1118;--ink3:#141820;--ink4:#1c2130;
+  --edge:#252c3d;--edgehi:#303a52;
+  --blue:#1a8fff;--bluehi:#4ba8ff;
+  --glow:rgba(26,143,255,.18);--glowhi:rgba(26,143,255,.40);
+  --snow:#eef0f7;--snowdim:rgba(238,240,247,.65);--snowfaint:rgba(238,240,247,.10);
+  --slate:#6b748f;--gold:#ffd166;
+  --display:'Bebas Neue',sans-serif;
+  --narrow:'Barlow Condensed',sans-serif;
+  --body:'Barlow',sans-serif;
+  --max:1380px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--snow);font-family:var(--body);overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:2px}
+
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.45;mix-blend-mode:overlay;
+}
+
+/* NAV */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:800;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 6rem;
+  background:rgba(8,10,15,.82);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--edge);
+  transition:padding .3s;
+}
+#nav.scrolled{padding:.85rem 6rem}
+.nav-logo{font-family:var(--narrow);font-weight:700;font-size:1.1rem;letter-spacing:.15em;text-transform:uppercase}
+.nav-logo em{color:var(--blue);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:2.8rem;list-style:none}
+.nav-links a{font-family:var(--narrow);font-size:.8rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--snowdim);transition:color .2s}
+.nav-links a:hover{color:var(--blue)}
+.nav-cta{
+  display:flex;align-items:center;gap:.55rem;
+  font-family:var(--narrow);font-weight:700;font-size:.88rem;letter-spacing:.06em;
+  color:var(--snow);background:transparent;
+  border:1.5px solid var(--edgehi);padding:.6rem 1.5rem;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition:border-color .2s,color .2s,background .2s;
+}
+.nav-cta:hover{border-color:var(--blue);color:var(--blue);background:var(--glow)}
+
+/* HERO */
+.hero-bg{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  pointer-events:none;z-index:-1;overflow:hidden;
+}
+.hbg-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(26,143,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(26,143,255,.03) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 80%);
+}
+.hbg-glow{
+  position:absolute;width:900px;height:900px;
+  left:50%;top:50%;transform:translate(-50%,-60%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(26,143,255,.07) 0%,transparent 65%);
+}
+.hbg-glow2{display:none}
+.hbg-vline{display:none}
+
+/* ── HERO: full-width centred layout ── */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:8rem 3rem 5rem;
+  position:relative;
+}
+
+/* badges row */
+.hero-badges{
+  display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;justify-content:center;
+  margin-bottom:3.5rem;
+  opacity:0;animation:up .7s .1s forwards;
+}
+.hbadge{
+  display:inline-flex;align-items:center;gap:.55rem;
+  font-family:var(--narrow);font-size:.82rem;font-weight:600;letter-spacing:.06em;
+  color:var(--snow);
+  background:rgba(14,17,24,.9);
+  border:1px solid var(--edge);
+  padding:.55rem 1.2rem;border-radius:6px;
+  backdrop-filter:blur(8px);
+  transition:border-color .2s,background .2s;
+}
+.hbadge:hover{border-color:rgba(26,143,255,.45);background:rgba(26,143,255,.08)}
+.hbadge-ico{font-size:1rem;line-height:1}
+
+/* big headline */
+.hero-h{
+  font-family:var(--display);
+  font-size:clamp(3.5rem,7vw,8rem);
+  line-height:.88;
+  text-transform:uppercase;
+  letter-spacing:.01em;
+  max-width:1200px;
+  opacity:0;animation:up .85s .25s forwards;
+}
+.hero-h .bl{color:var(--blue)}
+
+/* sub */
+.hero-sub{
+  margin-top:2.2rem;
+  font-size:1.08rem;font-weight:300;color:var(--snowdim);line-height:1.78;
+  max-width:580px;
+  opacity:0;animation:up .85s .4s forwards;
+}
+
+/* buttons */
+.hero-btns{
+  display:flex;gap:1.1rem;margin-top:2.8rem;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:up .85s .55s forwards;
+}
+
+/* hide old hero-right cards — not needed in centred layout */
+.hero-right{display:none!important}
+/* keep these classes so rest of page doesn't break */
+.hero-eyebrow,.hero-meta,.stars-row,.hmeta-txt,.hdiv,.hloc{display:none}
+.hrc,.hrc-phone,.hrc-lbl,.hrc-val,.hrc-sub,.hrc-phone-lbl,.hrc-phone-num,.hrc-phone-ico{}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:var(--narrow);font-weight:700;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.95rem 2.4rem;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all .25s;position:relative;overflow:hidden;cursor:pointer;border:none;
+}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 0 28px rgba(26,143,255,.35)}
+.btn-blue::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.btn-blue:hover{background:var(--bluehi);transform:translateY(-2px);box-shadow:0 0 50px rgba(26,143,255,.55)}
+.btn-blue:hover::before{transform:translateX(100%)}
+.btn-ghost{
+  background:transparent;color:var(--snow);
+  border:1.5px solid var(--edgehi);
+  padding:calc(.95rem - 1.5px) calc(2.4rem - 1.5px);
+}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-2px)}
+
+/* TRUST STRIP */
+#trust{
+  background:var(--ink2);border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+  padding:.9rem 6rem;display:flex;justify-content:center;align-items:center;
+}
+.ts{display:flex;align-items:center;gap:.7rem;font-family:var(--narrow);font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--snowdim);padding:0 3rem}
+.tsep{width:1px;height:22px;background:var(--edgehi);flex-shrink:0}
+.ts-ico{color:var(--blue);display:flex;align-items:center}
+
+/* SECTIONS */
+.wrap{max-width:var(--max);margin:0 auto;padding:7rem 6rem}
+.ew{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--narrow);font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:1.2rem}
+.ew::before{content:'';width:22px;height:1px;background:var(--blue)}
+.sh{font-family:var(--display);font-size:clamp(3rem,4.5vw,5.5rem);line-height:.92;text-transform:uppercase;letter-spacing:.02em}
+.sh .bl{color:var(--blue)}
+
+/* WHY */
+#why{background:var(--ink2)}
+#why .wrap{display:grid;grid-template-columns:1fr 2fr;gap:8rem;align-items:start}
+.why-intro p{margin-top:1.8rem;font-size:.93rem;font-weight:300;color:var(--snowdim);line-height:1.8;max-width:260px}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.wc{
+  background:var(--ink3);border:1px solid var(--edge);padding:2.4rem;
+  position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+  transition:border-color .3s,transform .3s;
+}
+.wc::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue);transform:scaleY(0);transform-origin:bottom;transition:transform .4s;box-shadow:0 0 10px var(--glow)}
+.wc:hover{border-color:rgba(26,143,255,.36);transform:translateY(-5px)}
+.wc:hover::after{transform:scaleY(1)}
+.wc-ico{
+  width:54px;height:54px;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(26,143,255,.15),rgba(26,143,255,.04));
+  border:1px solid rgba(26,143,255,.22);border-radius:10px;
+  box-shadow:0 4px 18px rgba(26,143,255,.12),inset 0 1px 0 rgba(255,255,255,.06);
+  position:relative;flex-shrink:0;transition:box-shadow .3s,border-color .3s;
+}
+.wc-ico::after{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,transparent 50%)}
+.wc:hover .wc-ico{box-shadow:0 6px 26px rgba(26,143,255,.28);border-color:rgba(26,143,255,.45)}
+.wc h3{font-family:var(--narrow);font-size:1.1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--snow);margin-bottom:.65rem}
+.wc p{font-size:.88rem;font-weight:300;color:var(--snowdim);line-height:1.78}
+
+/* SERVICES */
+#services{background:var(--ink)}
+.srv-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem}
+.srv-note{max-width:290px;font-size:.9rem;font-weight:300;color:var(--snowdim);line-height:1.75;text-align:right}
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge)}
+.sc{background:var(--ink2);padding:2.8rem 2.4rem;position:relative;overflow:hidden;transition:background .3s}
+.sc:hover{background:var(--ink3)}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--bluehi));transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.sc:hover::after{transform:scaleX(1)}
+.sc-num{font-family:var(--display);font-size:4rem;color:rgba(26,143,255,.07);line-height:1;position:absolute;top:1.5rem;right:1.5rem;transition:color .3s}
+.sc:hover .sc-num{color:rgba(26,143,255,.15)}
+.sc-ico{
+  width:52px;height:52px;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(26,143,255,.12),rgba(26,143,255,.03));
+  border:1px solid rgba(26,143,255,.18);border-radius:9px;
+  box-shadow:0 3px 14px rgba(26,143,255,.1),inset 0 1px 0 rgba(255,255,255,.05);
+  transition:box-shadow .3s,border-color .3s;
+}
+.sc:hover .sc-ico{box-shadow:0 5px 22px rgba(26,143,255,.28);border-color:rgba(26,143,255,.4)}
+.sc h3{font-family:var(--narrow);font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--snow);margin-bottom:.55rem}
+.sc p{font-size:.84rem;font-weight:300;color:var(--snowdim);line-height:1.72}
+
+/* STORY */
+#story{background:var(--ink2)}
+#story .wrap{display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:center}
+.sqc{
+  background:var(--ink3);border:1px solid var(--edge);padding:3rem;
+  clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
+  position:relative;
+}
+.sqc::before{content:'';position:absolute;top:0;left:0;right:24px;height:2px;background:linear-gradient(90deg,var(--blue),transparent)}
+.sqc-mark{font-family:var(--display);font-size:7rem;color:var(--blue);opacity:.1;line-height:.8;margin-bottom:.8rem}
+.sqc-text{font-size:1rem;font-style:italic;font-weight:300;color:var(--snowdim);line-height:1.88;margin-bottom:1.8rem}
+.sqc-author{font-family:var(--narrow);font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.sqc-stars{color:var(--gold);font-size:.88rem;margin-top:.5rem}
+.sqc-badge{
+  position:absolute;bottom:-1.6rem;right:-1.6rem;
+  width:94px;height:94px;background:var(--blue);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  box-shadow:0 8px 30px rgba(26,143,255,.45);
+}
+.sqc-badge .big{font-family:var(--display);font-size:2rem;line-height:1;color:#fff}
+.sqc-badge .sm{font-family:var(--narrow);font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.story-txt{}
+.story-body{margin-top:2rem;font-size:.93rem;font-weight:300;color:var(--snowdim);line-height:1.85}
+.story-body p+p{margin-top:1.2rem}
+.sstats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);margin-top:2.8rem}
+.ssi{background:var(--ink3);padding:1.6rem 1.2rem;text-align:center}
+.ssi-n{font-family:var(--display);font-size:2.8rem;color:var(--blue);line-height:1}
+.ssi-l{font-family:var(--narrow);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);margin-top:.4rem}
+
+/* REVIEWS */
+#reviews{background:var(--ink)}
+.rev-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem;flex-wrap:wrap;gap:2rem}
+.gbadge{display:flex;align-items:center;gap:1.4rem;background:var(--ink3);border:1px solid var(--edge);padding:1.2rem 2rem;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+.gl{font-family:var(--display);font-size:2.2rem;background:linear-gradient(135deg,#4285F4,#34A853,#FBBC05,#EA4335);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gs{font-family:var(--display);font-size:2.8rem;color:var(--snow);line-height:1}
+.gst{color:var(--gold);font-size:.92rem;margin:.2rem 0}
+.gc{font-family:var(--narrow);font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.rc{
+  background:var(--ink2);border:1px solid var(--edge);padding:2.2rem;
+  position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);
+  transition:border-color .3s,transform .3s;
+}
+.rc:hover{border-color:rgba(26,143,255,.3);transform:translateY(-4px)}
+.rc::before{content:'"';font-family:var(--display);font-size:9rem;color:var(--blue);opacity:.05;position:absolute;top:-1.5rem;left:.8rem;line-height:1;pointer-events:none}
+.rc-stars{color:var(--gold);font-size:.92rem;margin-bottom:1rem}
+.rc-text{font-size:.88rem;font-style:italic;font-weight:300;color:var(--snowdim);line-height:1.8;margin-bottom:1.5rem}
+.rc-author{font-family:var(--narrow);font-size:.77rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+
+/* CTA BANNER */
+#ctabanner{
+  background:linear-gradient(135deg,var(--ink3) 0%,#0c1420 100%);
+  border-top:1px solid rgba(26,143,255,.18);border-bottom:1px solid rgba(26,143,255,.18);
+  position:relative;overflow:hidden;text-align:center;
+}
+#ctabanner::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(26,143,255,.07) 0%,transparent 60%);pointer-events:none}
+.cta-inner{max-width:var(--max);margin:0 auto;padding:9rem 6rem;position:relative}
+.cta-h{font-family:var(--display);font-size:clamp(3.5rem,6.5vw,7.5rem);text-transform:uppercase;letter-spacing:.02em;margin-bottom:1rem}
+.cta-h .bl{color:var(--blue)}
+.cta-sub{font-size:1.05rem;font-weight:300;color:var(--snowdim);max-width:500px;margin:0 auto 3.5rem;line-height:1.75}
+.cta-btns{display:flex;gap:1.2rem;justify-content:center}
+
+/* ORDER */
+#order{background:var(--ink2)}
+#order .wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:7rem;align-items:start}
+.ord-l p{margin-top:1.5rem;font-size:.92rem;font-weight:300;color:var(--snowdim);line-height:1.8;max-width:300px}
+.ord-contacts{margin-top:3rem;display:flex;flex-direction:column;gap:1.2rem}
+.ocon{display:flex;align-items:center;gap:1rem}
+.ocon-ico{
+  width:44px;height:44px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(26,143,255,.13),rgba(26,143,255,.04));
+  border:1px solid rgba(26,143,255,.2);border-radius:8px;
+  box-shadow:0 3px 12px rgba(26,143,255,.1),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.ocon-lbl{font-family:var(--narrow);font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:.2rem}
+.ocon-val{font-size:.92rem;font-weight:400;color:var(--snow)}
+.ocon-val a{color:var(--snow);transition:color .2s}
+.ocon-val a:hover{color:var(--blue)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.fg{display:flex;flex-direction:column;gap:.4rem}
+.fg.full{grid-column:1/-1}
+.fl{font-family:var(--narrow);font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--slate)}
+.fi,.fsel,.fta{
+  background:var(--ink3);border:1px solid var(--edge);
+  color:var(--snow);font-family:var(--body);font-size:.92rem;
+  padding:.85rem 1.1rem;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;
+}
+.fi::placeholder,.fta::placeholder{color:var(--slate)}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,143,255,.1)}
+.fsel{
+  appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b748f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;
+}
+.fta{resize:vertical;min-height:105px}
+.fsel option{background:var(--ink3);color:var(--snow)}
+#form-ok{display:none;grid-column:1/-1;padding:1.5rem 2rem;background:var(--ink3);border:1px solid rgba(26,143,255,.35);color:var(--blue);font-family:var(--narrow);font-size:.95rem;font-weight:600;letter-spacing:.06em}
+
+/* LOCATION */
+#location{background:var(--ink)}
+#location .wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:5rem;align-items:start}
+.loc-items{display:flex;flex-direction:column;margin-top:2.5rem}
+.li{display:flex;align-items:flex-start;gap:1.2rem;padding:1.6rem 0;border-bottom:1px solid var(--edge)}
+.li:last-child{border-bottom:none}
+.li-ico{
+  width:46px;height:46px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(26,143,255,.13),rgba(26,143,255,.04));
+  border:1px solid rgba(26,143,255,.2);border-radius:9px;
+  box-shadow:0 3px 14px rgba(26,143,255,.1),inset 0 1px 0 rgba(255,255,255,.05);
+  margin-top:.05rem;
+}
+.li-lbl{font-family:var(--narrow);font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:.35rem}
+.li-val{font-size:.96rem;font-weight:400;color:var(--snow);line-height:1.7}
+.li-val a{color:var(--snow);transition:color .2s}
+.li-val a:hover{color:var(--blue)}
+.li-note{display:block;font-size:.79rem;color:var(--slate);margin-top:.2rem}
+.map-wrap{position:relative;margin-top:2.5rem}
+.map-frame{width:100%;height:480px;border:1px solid var(--edge);display:block;filter:grayscale(55%) invert(88%) hue-rotate(168deg) saturate(.45) brightness(.9);transition:filter .3s}
+.map-frame:hover{filter:grayscale(25%) invert(88%) hue-rotate(168deg) saturate(.7) brightness(.95)}
+.map-over{position:absolute;bottom:1.2rem;left:1.2rem;background:rgba(8,10,15,.88);backdrop-filter:blur(12px);border:1px solid var(--edge);padding:.85rem 1.4rem;font-family:var(--narrow);font-size:.76rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--snowdim)}
+.map-over strong{color:var(--blue)}
+
+/* FOOTER */
+#footer{background:var(--ink2);border-top:1px solid var(--edge)}
+.foot-main{max-width:var(--max);margin:0 auto;padding:5rem 6rem 3.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;border-bottom:1px solid var(--edge)}
+.flogo{font-family:var(--narrow);font-weight:700;font-size:1.15rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem}
+.flogo em{color:var(--blue);font-style:normal}
+.fdesc{font-size:.84rem;font-weight:300;color:var(--snowdim);line-height:1.8;max-width:240px;margin-bottom:1.5rem}
+.frating{display:flex;align-items:center;gap:.6rem}
+.frating .stars{color:var(--gold);font-size:.88rem}
+.frating span{font-family:var(--narrow);font-size:.76rem;color:var(--slate);letter-spacing:.05em}
+.fct{font-family:var(--narrow);font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:1.3rem}
+.flinks{list-style:none}
+.flinks li+li{margin-top:.65rem}
+.flinks a{font-size:.84rem;font-weight:300;color:var(--snowdim);transition:color .2s}
+.flinks a:hover{color:var(--blue)}
+.fcon p{font-size:.84rem;font-weight:300;color:var(--snowdim);line-height:1.8}
+.fcon a{color:var(--snowdim);transition:color .2s}
+.fcon a:hover{color:var(--blue)}
+.foot-bot{max-width:var(--max);margin:0 auto;padding:1.8rem 6rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.fbot-c{font-size:.75rem;font-weight:300;color:var(--slate)}
+
+/* FAB */
+.fab-wrap{
+  position:fixed;bottom:2rem;right:2rem;z-index:700;
+  display:flex;flex-direction:column;align-items:center;gap:.85rem;
+}
+.fab{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;transition:transform .22s,box-shadow .22s;
+  text-decoration:none;
+}
+.fab:hover{transform:scale(1.12)}
+/* tooltip */
+.fab-tip{
+  position:absolute;right:calc(100% + 14px);top:50%;transform:translateY(-50%);
+  background:var(--ink3);border:1px solid var(--edge);
+  font-family:var(--narrow);font-size:.72rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--snow);padding:.35rem .85rem;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .18s;
+  clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);
+}
+.fab:hover .fab-tip{opacity:1}
+/* phone — always visible, blue */
+.fab-call{
+  background:var(--blue);
+  box-shadow:0 4px 22px rgba(26,143,255,.45);
+  animation:fabp 2.8s ease-in-out infinite;
+  display:flex; /* always on */
+}
+.fab-call:hover{box-shadow:0 4px 36px rgba(26,143,255,.75);animation:none}
+/* whatsapp — always visible, brand green */
+.fab-wa{
+  background:#25D366;
+  box-shadow:0 4px 22px rgba(37,211,102,.4);
+  display:flex;
+}
+.fab-wa:hover{box-shadow:0 4px 36px rgba(37,211,102,.68)}
+
+/* REVEAL */
+.r{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.r.vis{opacity:1;transform:translateY(0)}
+.r.d1{transition-delay:.1s}.r.d2{transition-delay:.2s}.r.d3{transition-delay:.3s}.r.d4{transition-delay:.4s}
+
+/* KEYFRAMES */
+@keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fabp{0%,100%{box-shadow:0 4px 20px rgba(26,143,255,.4)}50%{box-shadow:0 4px 40px rgba(26,143,255,.75)}}
+
+/* RESPONSIVE */
+@media(max-width:1200px){
+  .wrap,#trust,.cta-inner,.foot-main,.foot-bot{padding-left:3rem;padding-right:3rem}
+  #nav,#nav.scrolled{padding-left:3rem;padding-right:3rem}
+  #hero{padding:8rem 3rem 5rem}
+  #why .wrap{grid-template-columns:1fr;gap:3rem}
+  #story .wrap,#order .wrap,#location .wrap{grid-template-columns:1fr;gap:3rem}
+}
+@media(max-width:900px){
+  .wrap,#trust,.cta-inner,.foot-main,.foot-bot{padding-left:1.5rem;padding-right:1.5rem}
+  #nav,#nav.scrolled{padding-left:1.5rem;padding-right:1.5rem}
+  .nav-links{display:none}
+  #hero{padding:7rem 1.5rem 4rem}
+  .hero-h{font-size:clamp(3.5rem,13vw,7rem)}
+  .srv-grid{grid-template-columns:1fr 1fr}
+  .rev-grid{grid-template-columns:1fr 1fr}
+  .foot-main{grid-template-columns:1fr 1fr}
+  .cta-btns{flex-direction:column;align-items:center}
+}
+@media(max-width:600px){
+  .srv-grid,.rev-grid,.fgrid{grid-template-columns:1fr}
+  .foot-main{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column;align-items:center}
+  .hero-h{font-size:clamp(3rem,14vw,5rem)}
+}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="hero-bg" aria-hidden="true">
+  <div class="hbg-grid"></div>
+  <div class="hbg-glow"></div>
+  <div class="hbg-glow2"></div>
+  <div class="hbg-vline"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Auto-Pneu <em>Novák</em></div>
+  <ul class="nav-links">
+    <li><a href="#why">O nás</a></li>
+    <li><a href="#services">Služby</a></li>
+    <li><a href="#reviews">Recenze</a></li>
+    <li><a href="#order">Objednávka</a></li>
+    <li><a href="#location">Kontakt</a></li>
+  </ul>
+  <a href="tel:+420777054630" class="nav-cta">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.007 1.08 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-.64a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+    +420 777 054 630
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <!-- badges -->
+  <div class="hero-badges">
+    <div class="hbadge"><span class="hbadge-ico">⭐</span> <strong>5.0</strong>&nbsp; Google</div>
+    <div class="hbadge">
+      <span class="hbadge-ico">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </span>
+      Děčín a okolí
+    </div>
+    <div class="hbadge">
+      <span class="hbadge-ico">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </span>
+      Servis i v den volání
+    </div>
+  </div>
+
+  <!-- headline -->
+  <h1 class="hero-h">
+    Autoservis,<br>
+    na který se<br>
+    můžete <span class="bl">spolehnout.</span>
+  </h1>
+
+  <!-- sub -->
+  <p class="hero-sub">
+    Profesionální auto a pneuservis v Děčíně. Poctivá práce, férové ceny a přístup, který vás potěší. Tisíce spokojených zákazníků z celého Děčínska nám věří.
+  </p>
+
+  <!-- buttons -->
+  <div class="hero-btns">
+    <a href="tel:+420777054630" class="btn btn-blue">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.007 1.08 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-.64a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+      Zavolat nyní
+    </a>
+    <a href="#order" class="btn btn-ghost">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Rezervovat termín
+    </a>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div id="trust">
+  <div class="ts"><span class="ts-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span>Férové ceny</div>
+  <div class="tsep"></div>
+  <div class="ts"><span class="ts-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>Servis tentýž den</div>
+  <div class="tsep"></div>
+  <div class="ts"><span class="ts-ico" style="color:var(--gold)">★</span>5,0 hodnocení Google</div>
+  <div class="tsep"></div>
+  <div class="ts"><span class="ts-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>Děčín a okolí</div>
+  <div class="tsep"></div>
+  <div class="ts"><span class="ts-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Zkušení mechanici</div>
+</div>
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="why-intro r">
+      <div class="ew">Proč nás zákazníci volí</div>
+      <h2 class="sh">Servis<br>jiného<br><span class="bl">kalibru</span></h2>
+      <p>Nejsme anonymní řetězec. Jsme místní lidé, kteří opravdu záleží na tom, abyste odjeli spokojení a v bezpečí.</p>
+    </div>
+    <div class="why-grid">
+      <div class="wc r">
+        <div class="wc-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <h3>Férový a poctivý přístup</h3>
+        <p>Vždy dostanete přesně to, co jsme dohodli. Bez skrytých poplatků, bez zbytečných oprav. Zákazníci vědí, že je neošidíme.</p>
+      </div>
+      <div class="wc r d1">
+        <div class="wc-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <h3>Rychlé řešení — tentýž den</h3>
+        <p>Čas je drahý. Snažíme se vyřídit servis co nejrychleji — mnohdy ještě ten samý den, kdy zavoláte.</p>
+      </div>
+      <div class="wc r d2">
+        <div class="wc-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
+        <h3>Zkušení profesionálové</h3>
+        <p>Léta praxe s opravami všech typů vozidel. Každý problém řešíme s odborností — od přezutí po složitou diagnostiku.</p>
+      </div>
+      <div class="wc r d3">
+        <div class="wc-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <h3>Lidský přístup</h3>
+        <p>Jsme místní firma, která se stará o místní řidiče. Každý zákazník je pro nás člověk — ne číslo v systému.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="wrap">
+    <div class="srv-top r">
+      <div>
+        <div class="ew">Co u nás zvládneme</div>
+        <h2 class="sh">Naše <span class="bl">služby</span></h2>
+      </div>
+      <p class="srv-note">Kompletní péče o vaše auto na jednom místě — od sezónního přezutí po náročné mechanické opravy.</p>
+    </div>
+    <div class="srv-grid">
+      <div class="sc r">
+        <div class="sc-num">01</div>
+        <div class="sc-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg></div>
+        <h3>Přezutí pneumatik</h3>
+        <p>Rychlá a profesionální výměna letních a zimních pneumatik. Připravíme vás na každou sezónu bezpečně.</p>
+      </div>
+      <div class="sc r d1">
+        <div class="sc-num">02</div>
+        <div class="sc-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h3>Uskladnění pneumatik</h3>
+        <p>Nemáte místo pro pneumatiky? Bezpečně je uskladníme a vydáme přesně tehdy, kdy je budete potřebovat.</p>
+      </div>
+      <div class="sc r d2">
+        <div class="sc-num">03</div>
+        <div class="sc-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2.1 2-6.3z"/></svg></div>
+        <h3>Vyvažování kol</h3>
+        <p>Přesné vyvažování kol pro klidnou jízdu a delší životnost pneumatik. Moderní vybavení, přesné výsledky.</p>
+      </div>
+      <div class="sc r">
+        <div class="sc-num">04</div>
+        <div class="sc-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
+        <h3>Mechanické opravy</h3>
+        <p>Opravy všech typů závad — od brzd a výfuku až po odpružení. Spolehlivé řešení, které opravdu vydrží.</p>
+      </div>
+      <div class="sc r d1">
+        <div class="sc-num">05</div>
+        <div class="sc-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+        <h3>Diagnostika vozidel</h3>
+        <p>Moderní vybavení odhalí každou závadu. Víme přesně, kde je problém — a jak ho správně opravit.</p>
+      </div>
+      <div class="sc r d2">
+        <div class="sc-num">06</div>
+        <div class="sc-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h3>Rychlá pomoc při poruše</h3>
+        <p>Rozbilo se vám auto mimo plán? Zavolejte — pomůžeme co nejdříve. Zachránili jsme mnohé dovolené.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story">
+  <div class="wrap">
+    <div style="position:relative" class="r">
+      <div class="sqc">
+        <div class="sqc-mark">"</div>
+        <p class="sqc-text">Cestou na dovolenou se nám rozbil zámek kufru. Pan Novák okamžitě zareagoval, sehnal náhradní díl a za přibližně 3 hodiny jsme mohli pokračovat v cestě. Zachránil nám celou dovolenou — a to bez ohledu na to, jak nabitý měl program!</p>
+        <div class="sqc-author">— Spokojená rodina, Google recenze</div>
+        <div class="sqc-stars">★★★★★</div>
+      </div>
+      <div class="sqc-badge"><span class="big">5,0</span><span class="sm">Google</span></div>
+    </div>
+    <div class="story-txt r d2">
+      <div class="ew">O nás</div>
+      <h2 class="sh">Místní<br>experti<br><span class="bl">na vaše auto</span></h2>
+      <div class="story-body">
+        <p>Auto-Pneu Servis Novák je lokální autoservis a pneuservis v srdci Děčína. Naším posláním je jednoduché: aby každý zákazník odešel spokojený, s autem v nejlepším stavu a s pocitem, že byl obsloužen poctivě a férově.</p>
+        <p>Zachránili jsme stovky kazů, přezuli tisíce kol a pomohli bezpočtu řidičů. Co nás dělá výjimečnými? Opravdový zájem o každého zákazníka — a ochota pomoct i tehdy, kdy to jiní nezvládnou. Proto se naši zákazníci rádi vrací.</p>
+      </div>
+      <div class="sstats">
+        <div class="ssi"><div class="ssi-n">5,0</div><div class="ssi-l">Hodnocení</div></div>
+        <div class="ssi"><div class="ssi-n">24+</div><div class="ssi-l">Recenzí</div></div>
+        <div class="ssi"><div class="ssi-n">100%</div><div class="ssi-l">Spokojených</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="wrap">
+    <div class="rev-top r">
+      <div>
+        <div class="ew">Co říkají zákazníci</div>
+        <h2 class="sh">Recenze<br><span class="bl">hovoří</span></h2>
+      </div>
+      <div class="gbadge">
+        <div class="gl">G</div>
+        <div><div class="gs">5,0</div><div class="gst">★★★★★</div><div class="gc">24 recenzí · Google</div></div>
+      </div>
+    </div>
+    <div class="rev-grid">
+      <div class="rc r"><div class="rc-stars">★★★★★</div><p class="rc-text">„Super ochotný a příjemný personál. Vše srozumitelně vysvětlí, poradí a férově nacení. Určitě se vrátím."</p><div class="rc-author">— Martin K.</div></div>
+      <div class="rc r d1"><div class="rc-stars">★★★★★</div><p class="rc-text">„Platí přesně to, co se domluvíte. Žádná nepříjemná překvapení. Kvalitní práce, rychlé vyřízení. Doporučuji."</p><div class="rc-author">— Jana H.</div></div>
+      <div class="rc r d2"><div class="rc-stars">★★★★★</div><p class="rc-text">„Zachránili nám celou dovolenou! Porucha daleko od domova — tady pomohli za pár hodin. Skvělí lidé."</p><div class="rc-author">— Rodina Svobodových</div></div>
+      <div class="rc r"><div class="rc-stars">★★★★★</div><p class="rc-text">„Přišel jsem s poškozenou pneumatikou bez objednání. Hned se mi věnovali a vyřešili to rychle. Perfektní!"</p><div class="rc-author">— Pavel D.</div></div>
+      <div class="rc r d1"><div class="rc-stars">★★★★★</div><p class="rc-text">„Pravidelně tady přezouvám. Vždy bezproblémové, rychlé a za rozumnou cenu. Nic jiného nepotřebuji."</p><div class="rc-author">— Lucie M.</div></div>
+      <div class="rc r d2"><div class="rc-stars">★★★★★</div><p class="rc-text">„Nejlepší autoservis v Děčíně. Poctivý, přátelský, profesionální. Všem kolegům doporučuji bez váhání."</p><div class="rc-author">— Tomáš B.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div id="ctabanner">
+  <div class="cta-inner">
+    <h2 class="cta-h r">Potřebuje vaše auto <span class="bl">servis?</span></h2>
+    <p class="cta-sub r d1">Neztrácejte čas. Zavolejte nebo vyplňte objednávku — ozveme se co nejdříve.</p>
+    <div class="cta-btns r d2">
+      <a href="tel:+420777054630" class="btn btn-blue">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.007 1.08 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-.64a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        Zavolat — +420 777 054 630
+      </a>
+      <a href="#order" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Objednat online
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER -->
+<section id="order">
+  <div class="wrap">
+    <div class="ord-l r">
+      <div class="ew">Online objednávka</div>
+      <h2 class="sh">Objednejte<br><span class="bl">servis</span></h2>
+      <p>Vyplňte formulář a ozveme se do 2 hodin v pracovní době. Nebo rovnou zavolejte.</p>
+      <div class="ord-contacts">
+        <div class="ocon">
+          <div class="ocon-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.007 1.08 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-.64a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+          <div><div class="ocon-lbl">Telefon</div><div class="ocon-val"><a href="tel:+420777054630">+420 777 054 630</a></div></div>
+        </div>
+        <div class="ocon">
+          <div class="ocon-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <div><div class="ocon-lbl">WhatsApp</div><div class="ocon-val"><a href="https://wa.me/420777054630">Napište přes WhatsApp</a></div></div>
+        </div>
+        <div class="ocon">
+          <div class="ocon-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="ocon-lbl">Otevírací doba</div><div class="ocon-val">Po–Pá: 8–17 · So: 8–12</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="r d1">
+      <form class="fgrid" onsubmit="formSend(event)">
+        <div class="fg"><label class="fl">Jméno a příjmení *</label><input type="text" class="fi" placeholder="Jan Novák" required></div>
+        <div class="fg"><label class="fl">Telefon *</label><input type="tel" class="fi" placeholder="+420 777 000 000" required></div>
+        <div class="fg"><label class="fl">E-mail</label><input type="email" class="fi" placeholder="jan@email.cz"></div>
+        <div class="fg"><label class="fl">Vozidlo</label><input type="text" class="fi" placeholder="Škoda Octavia 2019"></div>
+        <div class="fg"><label class="fl">Typ služby *</label>
+          <select class="fsel" required>
+            <option value="" disabled selected>Vyberte službu…</option>
+            <option>Přezutí pneumatik</option><option>Uskladnění pneumatik</option>
+            <option>Vyvažování kol</option><option>Mechanická oprava</option>
+            <option>Diagnostika vozidla</option><option>Jiné</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Preferovaný termín</label><input type="date" class="fi"></div>
+        <div class="fg full"><label class="fl">Popis závady / poznámka</label><textarea class="fta" placeholder="Popište problém…"></textarea></div>
+        <div class="fg full">
+          <button type="submit" class="btn btn-blue" style="border:none;cursor:pointer;align-self:flex-start">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Odeslat objednávku
+          </button>
+        </div>
+        <div id="form-ok">✅ Objednávka odeslána! Ozveme se co nejdříve.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location">
+  <div class="wrap">
+    <div class="r">
+      <div class="ew">Kde nás najdete</div>
+      <h2 class="sh">Lokalita<br>a <span class="bl">kontakt</span></h2>
+      <div class="loc-items">
+        <div class="li">
+          <div class="li-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="li-lbl">Adresa</div><div class="li-val">Husitská 1336/15, 405 02 Děčín<span class="li-note">Obsloužíme celý Děčín a okolí</span></div></div>
+        </div>
+        <div class="li">
+          <div class="li-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.007 1.08 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-.64a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+          <div><div class="li-lbl">Telefon</div><div class="li-val"><a href="tel:+420777054630">+420 777 054 630</a></div></div>
+        </div>
+        <div class="li">
+          <div class="li-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <div><div class="li-lbl">WhatsApp</div><div class="li-val"><a href="https://wa.me/420777054630">Napište přes WhatsApp</a></div></div>
+        </div>
+        <div class="li">
+          <div class="li-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a8fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="li-lbl">Otevírací doba</div><div class="li-val">Po – Pá: 8:00 – 17:00<br>So: 8:00 – 12:00<span class="li-note">Při urgenci volejte na mobil</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="map-wrap r d2">
+      <iframe class="map-frame" src="https://maps.google.com/maps?q=Husitsk%C3%A1+1336%2F15%2C+405+02+D%C4%9B%C4%8D%C3%ADn&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="border:0"></iframe>
+      <div class="map-over"><strong>Auto-Pneu Novák</strong> · Děčín</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="foot-main">
+    <div>
+      <div class="flogo">Auto-Pneu <em>Novák</em></div>
+      <p class="fdesc">Autoservis a pneuservis v Děčíně. Poctivá práce, férové ceny a přístup, na který se můžete spolehnout.</p>
+      <div class="frating"><span class="stars">★★★★★</span><span>5,0 / 5 · Google · 24 recenzí</span></div>
+    </div>
+    <div>
+      <div class="fct">Navigace</div>
+      <ul class="flinks">
+        <li><a href="#why">O nás</a></li>
+        <li><a href="#services">Naše služby</a></li>
+        <li><a href="#reviews">Recenze</a></li>
+        <li><a href="#order">Objednat servis</a></li>
+        <li><a href="#location">Kontakt</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fct">Služby</div>
+      <ul class="flinks">
+        <li><a href="#services">Přezutí pneumatik</a></li>
+        <li><a href="#services">Uskladnění kol</a></li>
+        <li><a href="#services">Vyvažování kol</a></li>
+        <li><a href="#services">Mechanické opravy</a></li>
+        <li><a href="#services">Diagnostika</a></li>
+      </ul>
+    </div>
+    <div class="fcon">
+      <div class="fct">Kontakt</div>
+      <p>Husitská 1336/15<br>405 02 Děčín<br><br><a href="tel:+420777054630">+420 777 054 630</a><br><br>Po–Pá: 8:00–17:00<br>So: 8:00–12:00</p>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <div class="fbot-c">© 2025 Auto-Pneu Servis Novák · Děčín · Všechna práva vyhrazena</div>
+    <div class="fbot-c">Autoservis · Pneuservis · Mechanické opravy · Děčín a okolí</div>
+  </div>
+</footer>
+
+<!-- FAB CLUSTER -->
+<div class="fab-wrap">
+  <!-- Telefon — modré kolečko -->
+  <a href="tel:+420777054630" class="fab fab-call" title="Zavolat">
+    <span class="fab-tip">+420 777 054 630</span>
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.007 1.08 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-.64a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+    </svg>
+  </a>
+  <!-- WhatsApp — zelené kolečko s oficiálním logem -->
+  <a href="https://wa.me/420777054630" class="fab fab-wa" title="WhatsApp" target="_blank" rel="noopener">
+    <span class="fab-tip">WhatsApp</span>
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="white">
+      <path d="M16 0C7.164 0 0 7.163 0 16c0 2.822.737 5.469 2.028 7.773L0 32l8.437-2.007A15.93 15.93 0 0016 32c8.836 0 16-7.163 16-16S24.836 0 16 0zm0 29.333a13.27 13.27 0 01-6.77-1.857l-.486-.289-5.006 1.191 1.257-4.877-.317-.499A13.253 13.253 0 012.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.27-9.862c-.398-.199-2.354-1.162-2.719-1.294-.365-.133-.63-.199-.896.199-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1-.398-.2-1.681-.619-3.202-1.977-1.183-1.056-1.981-2.36-2.214-2.758-.232-.398-.025-.613.175-.811.18-.178.398-.465.597-.698.2-.232.265-.398.398-.663.133-.265.066-.498-.033-.697-.1-.199-.896-2.16-1.228-2.957-.323-.777-.651-.672-.896-.684l-.764-.013c-.265 0-.696.1-.1061.498-.365.398-1.394 1.362-1.394 3.322 0 1.96 1.427 3.854 1.626 4.12.2.265 2.808 4.288 6.805 6.015.951.41 1.694.655 2.273.839.955.303 1.824.26 2.512.158.766-.114 2.354-.962 2.686-1.89.332-.928.332-1.724.232-1.89-.099-.166-.365-.265-.763-.465z"/>
+    </svg>
+  </a>
+</div>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60),{passive:true});
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+},{threshold:.12});
+document.querySelectorAll('.r').forEach(el=>obs.observe(el));
+
+function formSend(e){
+  e.preventDefault();
+  document.getElementById('form-ok').style.display='block';
+  e.target.querySelectorAll('input,select,textarea,button').forEach(el=>el.disabled=true);
+}
+</script>
+</body>
+</html>
